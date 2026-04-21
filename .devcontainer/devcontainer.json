@@ -1,0 +1,29 @@
+{
+  "containerEnv": {
+    "AWS_ACCESS_KEY_ID": "${localEnv:AWS_ACCESS_KEY_ID}",
+    "AWS_SECRET_ACCESS_KEY": "${localEnv:AWS_SECRET_ACCESS_KEY}",
+    "AWS_SESSION_TOKEN": "${localEnv:AWS_SESSION_TOKEN}",
+    "AWS_REGION": "${localEnv:AWS_REGION}",
+    "CLAUDE_CODE_USE_BEDROCK": "1",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "us.anthropic.claude-sonnet-4-6",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "us.anthropic.claude-opus-4-6-v1",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "ANDROID_SDK_ROOT": "/home/codespace/android-sdk",
+    "ANDROID_HOME": "/home/codespace/android-sdk"
+  },
+  "remoteEnv": {
+    "PATH": "/home/codespace/android-sdk/cmdline-tools/latest/bin:/home/codespace/android-sdk/platform-tools:${containerEnv:PATH}"
+  },
+  "postCreateCommand": "bash .devcontainer/setup-devcontainer.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Anthropic.claude-code",
+        "openai.chatgpt"
+      ],
+      "settings": {
+        "claudeCode.selectedModel": "opus"
+      }
+    }
+  }
+}
