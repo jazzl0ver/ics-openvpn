@@ -32,6 +32,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import java.io.IOException;
 
@@ -185,6 +186,16 @@ public class LaunchVPN extends Activity {
             ((EditText) userpwlayout.findViewById(R.id.username)).setText(mSelectedProfile.mUsername);
             ((EditText) userpwlayout.findViewById(R.id.password)).setText(mSelectedProfile.mPassword);
             ((CheckBox) userpwlayout.findViewById(R.id.save_password)).setChecked(!TextUtils.isEmpty(mSelectedProfile.mPassword));
+            EditText challengeView = userpwlayout.findViewById(R.id.challenge_response);
+            TextView challengeLabel = userpwlayout.findViewById(R.id.challenge_text);
+            if (mSelectedProfile.hasStaticChallenge()) {
+                challengeLabel.setVisibility(View.VISIBLE);
+                challengeLabel.setText(mSelectedProfile.mStaticChallenge);
+                challengeView.setVisibility(View.VISIBLE);
+            } else {
+                challengeLabel.setVisibility(View.GONE);
+                challengeView.setVisibility(View.GONE);
+            }
             ((CheckBox) userpwlayout.findViewById(R.id.show_password)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -207,11 +218,17 @@ public class LaunchVPN extends Activity {
                         mSelectedProfile.mUsername = ((EditText) userpwlayout.findViewById(R.id.username)).getText().toString();
 
                         String pw = ((EditText) userpwlayout.findViewById(R.id.password)).getText().toString();
+                        String authPw = pw;
+                        if (mSelectedProfile.hasStaticChallenge()) {
+                            String challengeResponse = ((EditText) userpwlayout.findViewById(R.id.challenge_response)).getText().toString();
+                            authPw = VpnProfile.getStaticChallengePassword(pw, challengeResponse);
+                        }
                         if (((CheckBox) userpwlayout.findViewById(R.id.save_password)).isChecked()) {
                             mSelectedProfile.mPassword = pw;
+                            mTransientAuthPW = mSelectedProfile.hasStaticChallenge() ? authPw : null;
                         } else {
                             mSelectedProfile.mPassword = null;
-                            mTransientAuthPW = pw;
+                            mTransientAuthPW = authPw;
                         }
                         mSelectedProfile.addChangeLogEntry("saved password");
                         ProfileManager.saveProfile( LaunchVPN.this, mSelectedProfile);
@@ -273,7 +290,7 @@ public class LaunchVPN extends Activity {
     void showLogWindow() {
 
         Intent startLW = new Intent();
-        startLW.setComponent(new ComponentName(this, getPackageName() + ".activities.LogWindow"));
+        startLW.setComponent(new ComponentName(this, "de.blinkt.openvpn.activities.LogWindow"));
         startLW.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(startLW);
 

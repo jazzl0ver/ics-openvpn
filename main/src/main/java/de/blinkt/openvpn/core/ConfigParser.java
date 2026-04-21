@@ -741,6 +741,12 @@ public class ConfigParser {
                 throw new ConfigParseError("Unknown parameter to auth-retry: " + authretry.get(2));
         }
 
+        Vector<String> staticChallenge = getOption("static-challenge", 2, 3);
+        if (staticChallenge != null) {
+            np.mStaticChallenge = staticChallenge.get(1);
+            np.mStaticChallengeEcho = !"0".equals(staticChallenge.get(2));
+        }
+
 
         Vector<String> crlfile = getOption("crl-verify", 1, 2);
         if (crlfile != null) {
@@ -1093,7 +1099,6 @@ public class ConfigParser {
     }
 
 }
-
 
 
 
